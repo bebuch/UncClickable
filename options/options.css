@@ -21,7 +21,8 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background: var(--color-bg);
   color: var(--color-text);
   line-height: 1.6;
@@ -74,7 +75,7 @@ label {
   color: var(--color-text-muted);
 }
 
-input[type="text"],
+input[type='text'],
 textarea {
   width: 100%;
   padding: 0.75rem;
@@ -82,10 +83,12 @@ textarea {
   border-radius: var(--radius);
   font-family: inherit;
   font-size: 0.95rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
-input[type="text"]:focus,
+input[type='text']:focus,
 textarea:focus {
   outline: none;
   border-color: var(--color-primary);
@@ -127,7 +130,9 @@ button {
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
+  transition:
+    background-color 0.2s,
+    transform 0.1s;
 }
 
 button:active {
@@ -182,7 +187,7 @@ button:active {
     --color-border: #495057;
   }
 
-  input[type="text"],
+  input[type='text'],
   textarea {
     background: var(--color-bg);
     color: var(--color-text);

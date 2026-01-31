@@ -11,7 +11,7 @@ export function createStorageMock() {
   let storage = {};
 
   const storageMethods = {
-    get: vi.fn(async (keys) => {
+    get: vi.fn(async keys => {
       if (keys === null || keys === undefined) {
         return { ...storage };
       }
@@ -32,10 +32,10 @@ export function createStorageMock() {
         return acc;
       }, {});
     }),
-    set: vi.fn(async (items) => {
+    set: vi.fn(async items => {
       Object.assign(storage, items);
     }),
-    remove: vi.fn(async (keys) => {
+    remove: vi.fn(async keys => {
       const keysArray = Array.isArray(keys) ? keys : [keys];
       keysArray.forEach(key => delete storage[key]);
     }),
@@ -58,7 +58,7 @@ export function createStorageMock() {
       vi.clearAllMocks();
     },
     _getAll: () => ({ ...storage }),
-    _setDirect: (data) => {
+    _setDirect: data => {
       storage = { ...data };
     },
   };
@@ -89,7 +89,7 @@ export function createActionMock() {
 export function createTabsMock() {
   return {
     query: vi.fn(async () => []),
-    get: vi.fn(async (tabId) => ({ id: tabId, url: 'https://example.com/' })),
+    get: vi.fn(async tabId => ({ id: tabId, url: 'https://example.com/' })),
     sendMessage: vi.fn(async () => {}),
     onUpdated: {
       addListener: vi.fn(),
@@ -109,7 +109,7 @@ export function createRuntimeMock() {
   return {
     sendMessage: vi.fn(async () => {}),
     openOptionsPage: vi.fn(async () => {}),
-    getURL: vi.fn((path) => `moz-extension://mock-id/${path}`),
+    getURL: vi.fn(path => `moz-extension://mock-id/${path}`),
     onMessage: {
       addListener: vi.fn(),
       removeListener: vi.fn(),

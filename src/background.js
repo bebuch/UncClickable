@@ -57,8 +57,8 @@ async function updateIconForTab(tabId, url) {
 
     await api.action.setTitle({
       tabId,
-      title: active 
-        ? 'UncClickable - Active (click to open settings)' 
+      title: active
+        ? 'UncClickable - Active (click to open settings)'
         : 'UncClickable - Inactive (click to open settings)',
     });
   } catch (error) {
@@ -83,19 +83,22 @@ function handleTabUpdated(tabId, changeInfo, tab) {
  * Handle tab activation (switching tabs)
  */
 function handleTabActivated(activeInfo) {
-  api.tabs.get(activeInfo.tabId).then(tab => {
-    if (tab.url) {
-      updateIconForTab(tab.id, tab.url);
-    }
-  }).catch(() => {
-    // Tab might not be accessible (e.g., chrome:// pages)
-  });
+  api.tabs
+    .get(activeInfo.tabId)
+    .then(tab => {
+      if (tab.url) {
+        updateIconForTab(tab.id, tab.url);
+      }
+    })
+    .catch(() => {
+      // Tab might not be accessible (e.g., chrome:// pages)
+    });
 }
 
 /**
  * Handle extension icon click - open options page
  */
-function handleActionClicked(tab) {
+function handleActionClicked(_tab) {
   api.runtime.openOptionsPage();
 }
 
@@ -141,13 +144,16 @@ api.storage.onChanged.addListener(handleStorageChanged);
 api.runtime.onInstalled.addListener(handleInstalled);
 
 // Update icon for current tab on startup
-api.tabs.query({ active: true, currentWindow: true }).then(tabs => {
-  if (tabs.length > 0 && tabs[0].url) {
-    updateIconForTab(tabs[0].id, tabs[0].url);
-  }
-}).catch(() => {
-  // No active tab or not accessible
-});
+api.tabs
+  .query({ active: true, currentWindow: true })
+  .then(tabs => {
+    if (tabs.length > 0 && tabs[0].url) {
+      updateIconForTab(tabs[0].id, tabs[0].url);
+    }
+  })
+  .catch(() => {
+    // No active tab or not accessible
+  });
 
 // Export for testing
 export {

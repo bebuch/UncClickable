@@ -30,10 +30,7 @@ describe('isUrlAllowed', () => {
   });
 
   describe('with configured URLs', () => {
-    const allowedUrls = [
-      'https://wiki.example.com/',
-      'https://intranet.company.com/docs/',
-    ];
+    const allowedUrls = ['https://wiki.example.com/', 'https://intranet.company.com/docs/'];
 
     it('should allow exact URL match', () => {
       expect(isUrlAllowed('https://wiki.example.com/', allowedUrls)).toBe(true);
@@ -128,10 +125,7 @@ describe('isUncAllowed', () => {
   });
 
   describe('multiple prefixes', () => {
-    const allowedPrefixes = [
-      '\\\\server1\\',
-      '\\\\server2\\data\\',
-    ];
+    const allowedPrefixes = ['\\\\server1\\', '\\\\server2\\data\\'];
 
     it('should match any of the allowed prefixes', () => {
       expect(isUncAllowed('\\\\server1\\anything', allowedPrefixes)).toBe(true);
@@ -215,28 +209,27 @@ describe('isValidUncPath', () => {
 
 describe('convertUncToUrl', () => {
   it('should convert basic UNC path', () => {
-    expect(convertUncToUrl('\\\\server\\share', 'uncopener'))
-      .toBe('uncopener://server/share');
+    expect(convertUncToUrl('\\\\server\\share', 'uncopener')).toBe('uncopener://server/share');
   });
 
   it('should convert UNC path with subdirectories', () => {
-    expect(convertUncToUrl('\\\\server\\share\\folder\\file.txt', 'uncopener'))
-      .toBe('uncopener://server/share/folder/file.txt');
+    expect(convertUncToUrl('\\\\server\\share\\folder\\file.txt', 'uncopener')).toBe(
+      'uncopener://server/share/folder/file.txt'
+    );
   });
 
   it('should preserve trailing slash', () => {
-    expect(convertUncToUrl('\\\\server\\share\\', 'uncopener'))
-      .toBe('uncopener://server/share/');
+    expect(convertUncToUrl('\\\\server\\share\\', 'uncopener')).toBe('uncopener://server/share/');
   });
 
   it('should work with custom scheme', () => {
-    expect(convertUncToUrl('\\\\server\\share', 'myscheme'))
-      .toBe('myscheme://server/share');
+    expect(convertUncToUrl('\\\\server\\share', 'myscheme')).toBe('myscheme://server/share');
   });
 
   it('should handle IP addresses', () => {
-    expect(convertUncToUrl('\\\\192.168.1.1\\share', 'uncopener'))
-      .toBe('uncopener://192.168.1.1/share');
+    expect(convertUncToUrl('\\\\192.168.1.1\\share', 'uncopener')).toBe(
+      'uncopener://192.168.1.1/share'
+    );
   });
 });
 

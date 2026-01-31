@@ -28,9 +28,7 @@
     "default_title": "UncClickable - Click to open settings"
   },
 
-  "permissions": [
-    "storage"
-  ],
+  "permissions": ["storage"],
 
   "background": {
     "scripts": ["src/background.js"],

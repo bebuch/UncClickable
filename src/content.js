@@ -55,7 +55,7 @@ function checkIfActive() {
  */
 function processCodeElement(codeElement) {
   const validation = validateCodeElement(codeElement);
-  
+
   if (!validation.valid) {
     return false;
   }
@@ -131,7 +131,7 @@ function processAddedNode(node) {
  * Set up MutationObserver for dynamic content
  */
 function setupMutationObserver() {
-  const observer = new MutationObserver((mutations) => {
+  const observer = new MutationObserver(mutations => {
     for (const mutation of mutations) {
       if (mutation.type === 'childList') {
         mutation.addedNodes.forEach(processAddedNode);
@@ -156,7 +156,7 @@ function handleMessage(message, sender, sendResponse) {
     loadConfig().then(() => {
       const wasActive = isActive;
       checkIfActive();
-      
+
       // If we just became active, process the page
       if (!wasActive && isActive) {
         processCodeElements();

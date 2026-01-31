@@ -2,7 +2,7 @@
  * Unit Tests for Content Script
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   isUrlAllowed,
   isUncAllowed,
@@ -26,7 +26,7 @@ function createCodeElement(text) {
  */
 function processCodeElement(element, config) {
   const validation = validateCodeElement(element);
-  
+
   if (!validation.valid) {
     return false;
   }
@@ -85,7 +85,7 @@ describe('Content Script - processCodeElement', () => {
     const result = processCodeElement(code, defaultConfig);
 
     expect(result).toBe(true);
-    
+
     const link = code.querySelector('a');
     expect(link).not.toBeNull();
     expect(link.href).toBe('uncopener://server/share/file.txt');
@@ -114,7 +114,7 @@ describe('Content Script - processCodeElement', () => {
       ...defaultConfig,
       allowedUncs: ['\\\\allowed-server\\'],
     };
-    
+
     const code = createCodeElement('\\\\other-server\\share');
     const result = processCodeElement(code, config);
 
@@ -127,7 +127,7 @@ describe('Content Script - processCodeElement', () => {
       ...defaultConfig,
       allowedUncs: ['\\\\allowed-server\\'],
     };
-    
+
     const code = createCodeElement('\\\\allowed-server\\share\\file.txt');
     const result = processCodeElement(code, config);
 
@@ -170,7 +170,7 @@ describe('Content Script - processCodeElements', () => {
     const count = processCodeElements(document, defaultConfig);
 
     expect(count).toBe(2);
-    
+
     const links = document.querySelectorAll('a');
     expect(links.length).toBe(2);
   });
@@ -182,7 +182,7 @@ describe('Content Script - processCodeElements', () => {
     };
 
     document.body.innerHTML = '<code>\\\\server\\share</code>';
-    
+
     const count = processCodeElements(document, config);
 
     expect(count).toBe(0);
@@ -196,7 +196,7 @@ describe('Content Script - processCodeElements', () => {
     };
 
     document.body.innerHTML = '<code>\\\\server\\share</code>';
-    
+
     const count = processCodeElements(document, config);
 
     expect(count).toBe(1);
@@ -215,7 +215,7 @@ describe('Content Script - processCodeElements', () => {
     const count = processCodeElements(container, defaultConfig);
 
     expect(count).toBe(1);
-    
+
     // Only the one inside container should be converted
     expect(container.querySelector('a')).not.toBeNull();
   });
@@ -393,7 +393,7 @@ describe('Content Script - GitHub README HTML Structure (from test.html)', () =>
     const result = processCodeElement(code, defaultConfig);
 
     expect(result).toBe(true);
-    
+
     const link = code.querySelector('a');
     expect(link).not.toBeNull();
     expect(link.href).toBe('uncopener://Data-1/userstmp/Benjamin_Buch/X.txt');
@@ -406,7 +406,7 @@ describe('Content Script - GitHub README HTML Structure (from test.html)', () =>
     };
 
     document.body.innerHTML = '<code>\\\\Data-1\\userstmp\\Benjamin_Buch\\X.txt</code>';
-    
+
     const count = processCodeElements(document, config);
 
     expect(count).toBe(1);
@@ -420,7 +420,7 @@ describe('Content Script - GitHub README HTML Structure (from test.html)', () =>
     };
 
     document.body.innerHTML = '<code>\\\\Data-1\\userstmp\\Benjamin_Buch\\X.txt</code>';
-    
+
     const count = processCodeElements(document, config);
 
     expect(count).toBe(1);
@@ -433,7 +433,7 @@ describe('Content Script - GitHub README HTML Structure (from test.html)', () =>
     };
 
     document.body.innerHTML = '<code>\\\\Data-1\\userstmp\\Benjamin_Buch\\X.txt</code>';
-    
+
     const count = processCodeElements(document, config);
 
     expect(count).toBe(0);

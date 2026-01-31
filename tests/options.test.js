@@ -199,9 +199,7 @@ describe('Options - loadSettings', () => {
     expect(document.getElementById('active-urls').value).toBe(
       'https://example.com/\nhttps://other.com/'
     );
-    expect(document.getElementById('allowed-uncs').value).toBe(
-      '\\\\server1\\\n\\\\server2\\'
-    );
+    expect(document.getElementById('allowed-uncs').value).toBe('\\\\server1\\\n\\\\server2\\');
   });
 
   it('should use defaults when storage is empty', async () => {

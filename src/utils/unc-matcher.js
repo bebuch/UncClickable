@@ -5,6 +5,8 @@
  */
 
 // Forbidden characters in Windows file system paths
+// Control characters \x00-\x1F are intentionally included to reject invalid paths
+// eslint-disable-next-line no-control-regex
 const FORBIDDEN_CHARS_REGEX = /[<>:"|?*\x00-\x1F]/;
 const NEWLINE_REGEX = /[\r\n]/;
 

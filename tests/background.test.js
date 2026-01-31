@@ -2,14 +2,8 @@
  * Unit Tests for Background Script (Service Worker)
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  createBrowserMock,
-  createStorageMock,
-  createActionMock,
-  createTabsMock,
-  createRuntimeMock,
-} from './mocks/browser-api.js';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { createBrowserMock } from './mocks/browser-api.js';
 
 // Set up browser mock before importing background.js
 const browserMock = createBrowserMock();

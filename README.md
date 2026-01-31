@@ -16,17 +16,20 @@ A browser extension that converts UNC paths (e.g., `\\server\share\folder\`) in 
 ### From Source
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/bebuch/UncClickable.git
    cd UncClickable
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Generate icons:
+
    ```bash
    npm run generate-icons
    ```
@@ -49,23 +52,28 @@ A browser extension that converts UNC paths (e.g., `\\server\share\folder\`) in 
 Click the extension icon to open the settings page, where you can configure:
 
 ### Custom URL Scheme
+
 The protocol used for generated links. Default: `uncopener`
 
 Example: `\\server\path\` → `uncopener://server/path/`
 
 ### Active URLs
+
 List of URL prefixes where the extension should be active (one per line).
 
 Examples:
+
 - `https://wiki.example.com/`
 - `https://intranet.company.com/docs/`
 
 Leave empty to activate on all pages.
 
 ### Allowed UNC Prefixes
+
 List of UNC path prefixes that should be converted (one per line).
 
 Examples:
+
 - `\\fileserver\` - Matches all paths on this server
 - `\\data-1\shared\` - Matches only paths under this share
 - `\\data-1\shared` - Matches `\\data-1\shared` and `\\data-1\sharedfiles\`
@@ -90,6 +98,7 @@ Leave empty to allow all valid UNC paths.
 ## URL Scheme Handler
 
 This extension only creates the links. You need a separate URL scheme handler to actually open the paths. See:
+
 - Windows: Register a custom protocol handler
 - Example handler: [UncOpener](https://github.com/example/UncOpener) (placeholder)
 
