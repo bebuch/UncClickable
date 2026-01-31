@@ -128,8 +128,8 @@ UncClickable/
 │   ├── options.html        # Settings page
 │   ├── options.js          # Settings page logic
 │   └── options.css         # Settings page styles
-├── icons/                  # Generated PNG icons
-├── Icon.svg                # Source icon
+├── icons/                  # Icons (source SVG and generated PNGs)
+│   └── icon.svg            # Source icon
 ├── scripts/
 │   └── generate-icons.sh   # Icon generation script
 └── tests/                  # Unit tests

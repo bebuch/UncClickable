@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Generate PNG icons from Icon.svg using Inkscape and ImageMagick
-# Only generates icons if they don't exist or if Icon.svg is newer
+# Generate PNG icons from icons/icon.svg using Inkscape and ImageMagick
+# Only generates icons if they don't exist or if icons/icon.svg is newer
 # Requires: inkscape, imagemagick (magick command)
 # Optional: optipng, pngcrush (for better compression)
 
@@ -10,7 +10,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 ICONS_DIR="$PROJECT_DIR/icons"
-SOURCE_SVG="$PROJECT_DIR/Icon.svg"
+SOURCE_SVG="$ICONS_DIR/icon.svg"
 
 # Icon sizes required for browser extensions
 SIZES=(16 32 48 128)
@@ -45,7 +45,7 @@ mkdir -p "$ICONS_DIR"
 
 # Check if source SVG exists
 if [ ! -f "$SOURCE_SVG" ]; then
-    echo "Error: Icon.svg not found at $SOURCE_SVG"
+    echo "Error: icon.svg not found at $SOURCE_SVG"
     exit 1
 fi
 
