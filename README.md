@@ -1,0 +1,140 @@
+# UncClickable
+
+A browser extension that converts UNC paths (e.g., `\\server\share\folder\`) in `<code>` elements into clickable links using a custom URL scheme.
+
+## Features
+
+- **Cross-browser support**: Works with Firefox, Chrome, and Edge (Manifest V3)
+- **Configurable URL scheme**: Default `uncopener://`, customizable
+- **URL filtering**: Only active on specified URLs (or everywhere if no URLs configured)
+- **UNC prefix filtering**: Only convert specific UNC paths (or all if not configured)
+- **Dynamic content support**: Automatically processes dynamically loaded content via MutationObserver
+- **Visual status indicator**: Icon changes between color (active) and grayscale (inactive)
+
+## Installation
+
+### From Source
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/bebuch/UncClickable.git
+   cd UncClickable
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Generate icons:
+   ```bash
+   npm run generate-icons
+   ```
+
+4. Load the extension in your browser:
+
+   **Firefox:**
+   - Navigate to `about:debugging#/runtime/this-firefox`
+   - Click "Load Temporary Add-on..."
+   - Select the `manifest.json` file
+
+   **Chrome/Edge:**
+   - Navigate to `chrome://extensions` (or `edge://extensions`)
+   - Enable "Developer mode"
+   - Click "Load unpacked"
+   - Select the extension directory
+
+## Configuration
+
+Click the extension icon to open the settings page, where you can configure:
+
+### Custom URL Scheme
+The protocol used for generated links. Default: `uncopener`
+
+Example: `\\server\path\` → `uncopener://server/path/`
+
+### Active URLs
+List of URL prefixes where the extension should be active (one per line).
+
+Examples:
+- `https://wiki.example.com/`
+- `https://intranet.company.com/docs/`
+
+Leave empty to activate on all pages.
+
+### Allowed UNC Prefixes
+List of UNC path prefixes that should be converted (one per line).
+
+Examples:
+- `\\fileserver\` - Matches all paths on this server
+- `\\data-1\shared\` - Matches only paths under this share
+- `\\data-1\shared` - Matches `\\data-1\shared` and `\\data-1\sharedfiles\`
+
+Leave empty to allow all valid UNC paths.
+
+**Note:** Matching is case-insensitive. A trailing backslash (`\`) requires an exact directory match; without it, any path with the same prefix matches.
+
+## How It Works
+
+1. When a page loads, the extension checks if the current URL matches any configured active URL prefix
+2. If active, it scans for `<code>` elements that:
+   - Are not editable (not inside `contenteditable` elements)
+   - Contain exactly one text node as child
+   - Have text between 3-260 characters (UTF-16 code units)
+   - Start with `\\` (UNC path indicator)
+   - Contain no invalid Windows filename characters (`< > : " | ? *` or control characters)
+   - Match one of the allowed UNC prefixes (if configured)
+3. Matching UNC paths are converted to clickable links
+4. A MutationObserver watches for dynamically added content
+
+## URL Scheme Handler
+
+This extension only creates the links. You need a separate URL scheme handler to actually open the paths. See:
+- Windows: Register a custom protocol handler
+- Example handler: [UncOpener](https://github.com/example/UncOpener) (placeholder)
+
+## Development
+
+### Prerequisites
+
+- Node.js 18+
+- Inkscape (for icon generation)
+- ImageMagick (for grayscale icon generation)
+
+### Running Tests
+
+```bash
+# Run tests in watch mode
+npm test
+
+# Run tests once
+npm run test:run
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+### Project Structure
+
+```
+UncClickable/
+├── manifest.json           # Extension manifest (Manifest V3)
+├── src/
+│   ├── background.js       # Service worker / background script
+│   ├── content.js          # Content script injected into pages
+│   └── utils/
+│       └── unc-matcher.js  # UNC path validation and conversion
+├── options/
+│   ├── options.html        # Settings page
+│   ├── options.js          # Settings page logic
+│   └── options.css         # Settings page styles
+├── icons/                  # Generated PNG icons
+├── Icon.svg                # Source icon
+├── scripts/
+│   └── generate-icons.sh   # Icon generation script
+└── tests/                  # Unit tests
+```
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.

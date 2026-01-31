@@ -1,0 +1,27 @@
+{
+  "name": "uncclickable",
+  "version": "1.0.0",
+  "description": "Browser extension that converts UNC paths in code elements to clickable custom URL scheme links",
+  "type": "module",
+  "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "generate-icons": "bash scripts/generate-icons.sh"
+  },
+  "keywords": [
+    "browser-extension",
+    "unc",
+    "manifest-v3",
+    "firefox",
+    "chrome",
+    "edge"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.0.0",
+    "jsdom": "^25.0.0",
+    "vitest": "^2.0.0"
+  }
+}

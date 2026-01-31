@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Test coverage
+coverage/
+
+# Build outputs
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Generated icons (keep Icon.svg as source)
+icons/*.png
+
+# Environment
+.env
+.env.local

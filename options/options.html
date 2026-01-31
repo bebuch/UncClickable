@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UncClickable Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>UncClickable Settings</h1>
+      <p class="subtitle">Configure how UNC paths are converted to clickable links</p>
+    </header>
+
+    <form id="settings-form">
+      <section class="setting-group">
+        <label for="scheme">
+          <span class="label-text">Custom URL Scheme</span>
+          <span class="label-hint">The protocol used for generated links (without ://)</span>
+        </label>
+        <input 
+          type="text" 
+          id="scheme" 
+          name="scheme" 
+          placeholder="uncopener"
+          pattern="[a-zA-Z][a-zA-Z0-9+.-]*"
+          title="Must start with a letter and contain only letters, numbers, +, ., or -"
+        >
+        <p class="example">Example: <code>\\server\path\</code> → <code><span id="scheme-preview">uncopener</span>://server/path/</code></p>
+      </section>
+
+      <section class="setting-group">
+        <label for="active-urls">
+          <span class="label-text">Active URLs</span>
+          <span class="label-hint">URL prefixes where the extension should be active (one per line)</span>
+        </label>
+        <textarea 
+          id="active-urls" 
+          name="activeUrls" 
+          rows="5"
+          placeholder="https://wiki.example.com/&#10;https://intranet.company.com/docs/"
+        ></textarea>
+        <p class="example">Leave empty to activate on all pages. Include the protocol (https://, http://).</p>
+      </section>
+
+      <section class="setting-group">
+        <label for="allowed-uncs">
+          <span class="label-text">Allowed UNC Prefixes</span>
+          <span class="label-hint">UNC path prefixes that should be converted (one per line)</span>
+        </label>
+        <textarea 
+          id="allowed-uncs" 
+          name="allowedUncs" 
+          rows="5"
+          placeholder="\\fileserver\&#10;\\data-1\shared\"
+        ></textarea>
+        <p class="example">
+          Leave empty to allow all UNC paths.<br>
+          <strong>Tip:</strong> End with <code>\</code> for exact directory match, without for prefix match.
+        </p>
+      </section>
+
+      <div class="button-group">
+        <button type="submit" class="btn-primary" id="save-btn">Save Settings</button>
+        <button type="button" class="btn-secondary" id="reset-btn">Reset to Defaults</button>
+      </div>
+
+      <div id="status" class="status" hidden></div>
+    </form>
+  </div>
+
+  <script src="options.js" type="module"></script>
+</body>
+</html>
