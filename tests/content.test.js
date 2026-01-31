@@ -8,7 +8,7 @@ import {
   isUncAllowed,
   convertUncToUrl,
   validateCodeElement,
-} from '../src/utils/unc-matcher.cjs';
+} from '../src/utils/unc-matcher.js';
 
 /**
  * Helper to create a code element with text

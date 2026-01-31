@@ -10,7 +10,7 @@ import {
   convertUncToUrl,
   isElementEditable,
   validateCodeElement,
-} from '../src/utils/unc-matcher.cjs';
+} from '../src/utils/unc-matcher.js';
 
 describe('isUrlAllowed', () => {
   describe('with empty allowed list', () => {
