@@ -1,8 +1,7 @@
 /**
  * UNC path matching and conversion utilities
- * 
- * Functions are defined globally for browser content script compatibility.
- * For tests, these are exported via module.exports (CommonJS).
+ *
+ * ES module providing UNC path validation and conversion functions.
  */
 
 // Forbidden characters in Windows file system paths
@@ -129,14 +128,12 @@ function validateCodeElement(element) {
   return { valid: true, text };
 }
 
-// Export for Node.js/test environment (ignored in browser)
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    isUrlAllowed,
-    isUncAllowed,
-    isValidUncPath,
-    convertUncToUrl,
-    isElementEditable,
-    validateCodeElement,
-  };
-}
+// ES module exports
+export {
+  isUrlAllowed,
+  isUncAllowed,
+  isValidUncPath,
+  convertUncToUrl,
+  isElementEditable,
+  validateCodeElement,
+};

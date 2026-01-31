@@ -7,7 +7,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "uncclickable@example.com",
-      "strict_min_version": "109.0"
+      "strict_min_version": "128.0"
     }
   },
 
@@ -41,8 +41,9 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["src/utils/unc-matcher.js", "src/content.js"],
-      "run_at": "document_end"
+      "js": ["src/content.js"],
+      "run_at": "document_end",
+      "type": "module"
     }
   ],
 

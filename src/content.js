@@ -1,11 +1,14 @@
 /**
  * UncClickable Content Script
  * Converts UNC paths in <code> elements to clickable links
- * 
- * Note: This script depends on unc-matcher.js being loaded first.
- * The functions isUrlAllowed, isUncAllowed, convertUncToUrl, and validateCodeElement
- * are defined in that file and available in the global scope.
  */
+
+import {
+  isUrlAllowed,
+  isUncAllowed,
+  convertUncToUrl,
+  validateCodeElement,
+} from './utils/unc-matcher.js';
 
 // Browser API compatibility
 const api = typeof browser !== 'undefined' ? browser : chrome;

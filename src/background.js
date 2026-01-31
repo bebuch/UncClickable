@@ -3,6 +3,8 @@
  * Handles extension icon state and opens options page
  */
 
+import { isUrlAllowed } from './utils/unc-matcher.js';
+
 // Browser API compatibility
 const api = typeof browser !== 'undefined' ? browser : chrome;
 
@@ -36,25 +38,6 @@ async function loadConfig() {
     console.error('UncClickable: Failed to load config', error);
     return { scheme: 'uncopener', activeUrls: [], allowedUncs: [] };
   }
-}
-
-/**
- * Check if a URL is allowed based on configured URL prefixes
- * @param {string} currentUrl - The current page URL
- * @param {string[]} allowedUrls - Array of allowed URL prefixes
- * @returns {boolean} - True if URL is allowed
- */
-function isUrlAllowed(currentUrl, allowedUrls) {
-  if (!allowedUrls || allowedUrls.length === 0) {
-    return true;
-  }
-
-  const currentLower = currentUrl.toLowerCase();
-  
-  return allowedUrls.some(allowedUrl => {
-    const allowedLower = allowedUrl.toLowerCase();
-    return currentLower.startsWith(allowedLower);
-  });
 }
 
 /**
