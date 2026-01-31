@@ -23,9 +23,6 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Generated icons (keep Icon.svg as source)
-icons/*.png
-
 # Environment
 .env
 .env.local
