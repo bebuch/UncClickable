@@ -13,15 +13,23 @@
  * - For 'getStatus': { active: boolean } - Whether extension is active on current page
  */
 
-import {
-  isUrlAllowed,
-  isUncAllowed,
-  convertUncToUrl,
-  validateCodeElement,
-} from './utils/unc-matcher.js';
-
 // Browser API compatibility
 const api = typeof browser !== 'undefined' ? browser : chrome;
+
+// Will be populated by dynamic import
+let isUrlAllowed, isUncAllowed, convertUncToUrl, validateCodeElement;
+
+/**
+ * Initialize by dynamically importing the utilities module
+ */
+async function loadModule() {
+  const moduleUrl = api.runtime.getURL('src/utils/unc-matcher.js');
+  const module = await import(moduleUrl);
+  isUrlAllowed = module.isUrlAllowed;
+  isUncAllowed = module.isUncAllowed;
+  convertUncToUrl = module.convertUncToUrl;
+  validateCodeElement = module.validateCodeElement;
+}
 
 // Configuration state
 let config = {
@@ -181,6 +189,9 @@ function handleMessage(message, sender, sendResponse) {
  * Initialize the content script
  */
 async function init() {
+  // Load the utilities module first
+  await loadModule();
+
   // Load configuration
   await loadConfig();
 
