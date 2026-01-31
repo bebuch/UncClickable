@@ -12,15 +12,21 @@ const DEFAULTS = {
   allowedUncs: [],
 };
 
-// DOM elements
-const form = document.getElementById('settings-form');
-const schemeInput = document.getElementById('scheme');
-const schemePreview = document.getElementById('scheme-preview');
-const activeUrlsInput = document.getElementById('active-urls');
-const allowedUncsInput = document.getElementById('allowed-uncs');
-const saveBtn = document.getElementById('save-btn');
-const resetBtn = document.getElementById('reset-btn');
-const statusEl = document.getElementById('status');
+/**
+ * Get DOM elements (fetched fresh to support testing)
+ */
+function getElements() {
+  return {
+    form: document.getElementById('settings-form'),
+    schemeInput: document.getElementById('scheme'),
+    schemePreview: document.getElementById('scheme-preview'),
+    activeUrlsInput: document.getElementById('active-urls'),
+    allowedUncsInput: document.getElementById('allowed-uncs'),
+    saveBtn: document.getElementById('save-btn'),
+    resetBtn: document.getElementById('reset-btn'),
+    statusEl: document.getElementById('status'),
+  };
+}
 
 /**
  * Parse textarea content into array of non-empty lines
@@ -49,6 +55,7 @@ function arrayToTextarea(arr) {
  * @param {string} type - 'success' or 'error'
  */
 function showStatus(message, type = 'success') {
+  const { statusEl } = getElements();
   statusEl.textContent = message;
   statusEl.className = `status ${type}`;
   statusEl.hidden = false;
@@ -63,13 +70,15 @@ function showStatus(message, type = 'success') {
  * Load settings from storage and populate form
  */
 async function loadSettings() {
+  const { schemeInput, activeUrlsInput, allowedUncsInput } = getElements();
+
   try {
     const config = await api.storage.sync.get(DEFAULTS);
-    
+
     schemeInput.value = config.scheme || DEFAULTS.scheme;
     activeUrlsInput.value = arrayToTextarea(config.activeUrls || []);
     allowedUncsInput.value = arrayToTextarea(config.allowedUncs || []);
-    
+
     // Update preview
     updateSchemePreview();
   } catch (error) {
@@ -83,6 +92,8 @@ async function loadSettings() {
  */
 async function saveSettings(event) {
   event.preventDefault();
+
+  const { schemeInput, activeUrlsInput, allowedUncsInput } = getElements();
 
   const config = {
     scheme: schemeInput.value.trim() || DEFAULTS.scheme,
@@ -121,14 +132,34 @@ async function resetSettings() {
  * Update the scheme preview in the example
  */
 function updateSchemePreview() {
+  const { schemeInput, schemePreview } = getElements();
   const scheme = schemeInput.value.trim() || DEFAULTS.scheme;
   schemePreview.textContent = scheme;
 }
 
-// Event listeners
-form.addEventListener('submit', saveSettings);
-resetBtn.addEventListener('click', resetSettings);
-schemeInput.addEventListener('input', updateSchemePreview);
+/**
+ * Initialize event listeners
+ */
+function initEventListeners() {
+  const { form, resetBtn, schemeInput } = getElements();
 
-// Load settings on page load
+  form.addEventListener('submit', saveSettings);
+  resetBtn.addEventListener('click', resetSettings);
+  schemeInput.addEventListener('input', updateSchemePreview);
+}
+
+// Initialize on page load
+initEventListeners();
 loadSettings();
+
+// Export for testing
+export {
+  DEFAULTS,
+  parseTextareaToArray,
+  arrayToTextarea,
+  showStatus,
+  loadSettings,
+  saveSettings,
+  resetSettings,
+  updateSchemePreview,
+};
