@@ -4,7 +4,7 @@ A browser extension that converts UNC paths (e.g., `\\server\share\folder\`) in 
 
 ## Features
 
-- **Cross-browser support**: Works with Firefox, Chrome, and Edge (Manifest V3)
+- **Cross-browser support**: Works with Firefox 128+, Chrome, and Edge (Manifest V3)
 - **Configurable URL scheme**: Default `uncopener://`, customizable
 - **URL filtering**: Only active on specified URLs (or everywhere if no URLs configured)
 - **UNC prefix filtering**: Only convert specific UNC paths (or all if not configured)
@@ -119,11 +119,13 @@ npm run test:coverage
 ```
 UncClickable/
 ├── manifest.json           # Extension manifest (Manifest V3)
+├── package.json            # Project configuration and dependencies
+├── vitest.config.js        # Test configuration
 ├── src/
 │   ├── background.js       # Service worker / background script
 │   ├── content.js          # Content script injected into pages
 │   └── utils/
-│       └── unc-matcher.js  # UNC path validation and conversion
+│       └── unc-matcher.js  # UNC path validation and conversion utilities
 ├── options/
 │   ├── options.html        # Settings page
 │   ├── options.js          # Settings page logic
@@ -132,7 +134,14 @@ UncClickable/
 │   └── icon.svg            # Source icon
 ├── scripts/
 │   └── generate-icons.sh   # Icon generation script
-└── tests/                  # Unit tests
+└── tests/                  # Unit tests (Vitest)
+    ├── setup.js            # Test setup and browser API mocks
+    ├── unc-matcher.test.js # Tests for UNC path utilities
+    ├── content.test.js     # Tests for content script logic
+    ├── background.test.js  # Tests for background script
+    ├── options.test.js     # Tests for options page
+    └── mocks/
+        └── browser-api.js  # Browser extension API mocks
 ```
 
 ## License
