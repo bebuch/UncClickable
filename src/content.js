@@ -1,6 +1,16 @@
 /**
  * UncClickable Content Script
  * Converts UNC paths in <code> elements to clickable links
+ *
+ * Message Passing API:
+ * This script listens for messages from the background script:
+ *
+ * Incoming messages (from background script):
+ * - { type: 'configUpdated' } - Configuration changed, reload and reprocess
+ * - { type: 'getStatus' } - Request current status
+ *
+ * Outgoing responses:
+ * - For 'getStatus': { active: boolean } - Whether extension is active on current page
  */
 
 import {

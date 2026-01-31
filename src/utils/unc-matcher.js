@@ -4,10 +4,16 @@
  * ES module providing UNC path validation and conversion functions.
  */
 
-// Forbidden characters in Windows file system paths
-// Control characters \x00-\x1F are intentionally included to reject invalid paths
+/**
+ * Forbidden characters in Windows file system paths:
+ * - < > : " | ? * - Reserved by Windows filesystem
+ * - \x00-\x1F - ASCII control characters (NUL through US)
+ *   These include NUL(\x00), Tab(\x09), CR(\x0D), LF(\x0A), etc.
+ */
 // eslint-disable-next-line no-control-regex
 const FORBIDDEN_CHARS_REGEX = /[<>:"|?*\x00-\x1F]/;
+
+/** Newline characters to reject (paths cannot span multiple lines) */
 const NEWLINE_REGEX = /[\r\n]/;
 
 /**

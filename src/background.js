@@ -1,6 +1,17 @@
 /**
  * UncClickable Background Script (Service Worker)
- * Handles extension icon state and opens options page
+ * Handles extension icon state, tab tracking, and options page.
+ *
+ * Event Listeners:
+ * - tabs.onUpdated: Updates icon when tab URL changes
+ * - tabs.onActivated: Updates icon when switching tabs
+ * - action.onClicked: Opens options page when icon is clicked
+ * - storage.onChanged: Notifies content scripts when config changes
+ * - runtime.onInstalled: Opens options page on first install
+ *
+ * Message Passing:
+ * Sends to content scripts:
+ * - { type: 'configUpdated' } - When storage changes
  */
 
 import { isUrlAllowed } from './utils/unc-matcher.js';
@@ -25,6 +36,7 @@ const ICONS_INACTIVE = {
 
 /**
  * Load configuration from storage
+ * @returns {Promise<{scheme: string, activeUrls: string[], allowedUncs: string[]}>}
  */
 async function loadConfig() {
   try {
