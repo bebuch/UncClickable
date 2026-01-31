@@ -26,3 +26,6 @@ npm-debug.log*
 # Environment
 .env
 .env.local
+
+# Project planning
+IMPROVEMENT_PLAN.md
