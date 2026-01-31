@@ -8,7 +8,7 @@ import {
   isUncAllowed,
   convertUncToUrl,
   validateCodeElement,
-} from '../src/utils/unc-matcher.js';
+} from '../src/utils/unc-matcher.cjs';
 
 /**
  * Helper to create a code element with text
@@ -331,5 +331,111 @@ describe('Content Script - Edge Cases', () => {
 
     expect(result).toBe(true);
     expect(code.querySelector('a')).not.toBeNull();
+  });
+});
+
+describe('Content Script - GitHub README HTML Structure (from test.html)', () => {
+  const defaultConfig = {
+    scheme: 'uncopener',
+    activeUrls: [],
+    allowedUncs: [],
+  };
+
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    Object.defineProperty(window, 'location', {
+      value: { href: 'https://github.com/bebuch/first-repo' },
+      writable: true,
+    });
+  });
+
+  it('should convert UNC paths with hyphens in server name (Data-1)', () => {
+    // This is the exact HTML structure from the GitHub README
+    document.body.innerHTML = `
+      <article class="markdown-body entry-content container-lg" itemprop="text">
+        <p dir="auto">This is not my first Git repositrory ;-)</p>
+        <ul dir="auto">
+          <li><code>\\\\Data-1\\userstmp\\Benjamin_Buch\\X.txt</code></li>
+          <li><code>\\\\Data-1\\userstmp\\Benjamin_Buch</code></li>
+        </ul>
+      </article>
+    `;
+
+    const count = processCodeElements(document, defaultConfig);
+
+    expect(count).toBe(2);
+
+    const links = document.querySelectorAll('a');
+    expect(links.length).toBe(2);
+
+    // Check first link
+    expect(links[0].href).toBe('uncopener://Data-1/userstmp/Benjamin_Buch/X.txt');
+    expect(links[0].textContent).toBe('\\\\Data-1\\userstmp\\Benjamin_Buch\\X.txt');
+
+    // Check second link
+    expect(links[1].href).toBe('uncopener://Data-1/userstmp/Benjamin_Buch');
+    expect(links[1].textContent).toBe('\\\\Data-1\\userstmp\\Benjamin_Buch');
+  });
+
+  it('should handle code elements inside list items', () => {
+    document.body.innerHTML = `
+      <ul>
+        <li><code>\\\\server\\share\\file.txt</code></li>
+      </ul>
+    `;
+
+    const count = processCodeElements(document, defaultConfig);
+    expect(count).toBe(1);
+  });
+
+  it('should validate the exact UNC path from test.html', () => {
+    const code = createCodeElement('\\\\Data-1\\userstmp\\Benjamin_Buch\\X.txt');
+    const result = processCodeElement(code, defaultConfig);
+
+    expect(result).toBe(true);
+    
+    const link = code.querySelector('a');
+    expect(link).not.toBeNull();
+    expect(link.href).toBe('uncopener://Data-1/userstmp/Benjamin_Buch/X.txt');
+  });
+
+  it('should work with configured activeUrls for github.com', () => {
+    const config = {
+      ...defaultConfig,
+      activeUrls: ['https://github.com'],
+    };
+
+    document.body.innerHTML = '<code>\\\\Data-1\\userstmp\\Benjamin_Buch\\X.txt</code>';
+    
+    const count = processCodeElements(document, config);
+
+    expect(count).toBe(1);
+    expect(document.querySelector('a')).not.toBeNull();
+  });
+
+  it('should work with configured allowedUncs prefix', () => {
+    const config = {
+      ...defaultConfig,
+      allowedUncs: ['\\\\Data-1\\'],
+    };
+
+    document.body.innerHTML = '<code>\\\\Data-1\\userstmp\\Benjamin_Buch\\X.txt</code>';
+    
+    const count = processCodeElements(document, config);
+
+    expect(count).toBe(1);
+  });
+
+  it('should reject UNC when allowedUncs does not match', () => {
+    const config = {
+      ...defaultConfig,
+      allowedUncs: ['\\\\Other-Server\\'],
+    };
+
+    document.body.innerHTML = '<code>\\\\Data-1\\userstmp\\Benjamin_Buch\\X.txt</code>';
+    
+    const count = processCodeElements(document, config);
+
+    expect(count).toBe(0);
   });
 });
