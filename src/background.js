@@ -148,3 +148,16 @@ api.tabs.query({ active: true, currentWindow: true }).then(tabs => {
 }).catch(() => {
   // No active tab or not accessible
 });
+
+// Export for testing
+export {
+  loadConfig,
+  updateIconForTab,
+  handleTabUpdated,
+  handleTabActivated,
+  handleActionClicked,
+  handleStorageChanged,
+  handleInstalled,
+  ICONS_ACTIVE,
+  ICONS_INACTIVE,
+};
