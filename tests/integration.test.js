@@ -9,7 +9,6 @@ import { browserMock } from './setup.js';
 import {
   isUrlAllowed,
   isUncAllowed,
-  isValidUncPath,
   convertUncToUrl,
   validateCodeElement,
 } from '../src/utils/unc-matcher.js';
@@ -318,9 +317,7 @@ describe('Integration - Message Passing Simulation', () => {
       allowedUncs: [],
     });
 
-    // Simulate background sending configUpdated message
-    const configUpdateMessage = { type: 'configUpdated' };
-
+    // Simulate background sending configUpdated message { type: 'configUpdated' }
     // In real scenario, content script would reload config and reprocess
     const newConfig = await browserMock.storage.sync.get({
       scheme: 'uncopener',
@@ -332,8 +329,7 @@ describe('Integration - Message Passing Simulation', () => {
   });
 
   it('should simulate status request/response', () => {
-    // Content script would respond to getStatus message
-    const statusRequest = { type: 'getStatus' };
+    // Content script would respond to getStatus message { type: 'getStatus' }
     const isActive = true; // Simulated state
 
     const response = { active: isActive };
