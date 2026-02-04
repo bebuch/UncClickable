@@ -1,6 +1,6 @@
 {
   "name": "uncclickable",
-  "version": "1.0.0",
+  "version": "1.0",
   "description": "Browser extension that converts UNC paths in code elements to clickable custom URL scheme links",
   "type": "module",
   "scripts": {
