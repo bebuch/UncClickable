@@ -11,41 +11,27 @@ A browser extension that converts UNC paths (e.g., `\\server\share\folder\`) in 
 - **Dynamic content support**: Automatically processes dynamically loaded content via MutationObserver
 - **Visual status indicator**: Icon changes between color (active) and grayscale (inactive)
 
-## Installation
+## Try It Out
 
-### From Source
+No build step required – the extension is ready to use.
 
-1. Clone the repository:
+1. Download the repository:
+   - Go to the [GitHub repository](https://github.com/bebuch/UncClickable)
+   - Click the green **Code** button → **Download ZIP**
+   - Extract the ZIP file
 
-   ```bash
-   git clone https://github.com/bebuch/UncClickable.git
-   cd UncClickable
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-3. Generate icons:
-
-   ```bash
-   npm run generate-icons
-   ```
-
-4. Load the extension in your browser:
+2. Load the extension in your browser:
 
    **Firefox:**
    - Navigate to `about:debugging#/runtime/this-firefox`
    - Click "Load Temporary Add-on..."
-   - Select the `manifest.json` file
+   - Select the `manifest.json` file from the extracted folder
 
    **Chrome/Edge:**
    - Navigate to `chrome://extensions` (or `edge://extensions`)
    - Enable "Developer mode"
    - Click "Load unpacked"
-   - Select the extension directory
+   - Select the extracted folder
 
 ## Configuration
 
@@ -108,11 +94,32 @@ This extension only creates the links. You need a separate URL scheme handler to
 
 ## Development
 
-### Prerequisites
+### Setup
 
-- Node.js 18+
-- Inkscape (for icon generation)
-- ImageMagick (for grayscale icon generation)
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/bebuch/UncClickable.git
+   cd UncClickable
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+### Regenerating Icons
+
+The icon PNGs are pre-built and committed to the repository. Regeneration is only needed if you modify `icons/icon.svg`.
+
+**Prerequisites:**
+- Inkscape
+- ImageMagick
+
+```bash
+npm run generate-icons
+```
 
 ### Running Tests
 
@@ -143,7 +150,7 @@ UncClickable/
 │   ├── options.html        # Settings page
 │   ├── options.js          # Settings page logic
 │   └── options.css         # Settings page styles
-├── icons/                  # Icons (source SVG and generated PNGs)
+├── icons/                  # Extension icons (PNGs pre-built, regenerate only if SVG changes)
 │   └── icon.svg            # Source icon
 ├── scripts/
 │   └── generate-icons.sh   # Icon generation script
