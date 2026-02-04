@@ -282,7 +282,10 @@ describe('Integration - UNC Path Validation and Conversion', () => {
       { input: '\\\\server\\share', expected: 'uncopener://server/share' },
       { input: '\\\\server\\share\\', expected: 'uncopener://server/share/' },
       { input: '\\\\192.168.1.1\\data', expected: 'uncopener://192.168.1.1/data' },
-      { input: '\\\\server-01\\share\\folder\\file.txt', expected: 'uncopener://server-01/share/folder/file.txt' },
+      {
+        input: '\\\\server-01\\share\\folder\\file.txt',
+        expected: 'uncopener://server-01/share/folder/file.txt',
+      },
     ];
 
     const config = { scheme: 'uncopener', htmlElements: 'code', activeUrls: [], allowedUncs: [] };

@@ -90,7 +90,11 @@ describe('getActiveUrlEntry', () => {
     ];
 
     it('should return matching entry with its elements', () => {
-      const result = getActiveUrlEntry('https://wiki.example.com/page', activeUrls, defaultElements);
+      const result = getActiveUrlEntry(
+        'https://wiki.example.com/page',
+        activeUrls,
+        defaultElements
+      );
       expect(result).toEqual({ url: 'https://wiki.example.com/', elements: ['code', 'pre'] });
     });
 
@@ -100,7 +104,11 @@ describe('getActiveUrlEntry', () => {
     });
 
     it('should be case-insensitive', () => {
-      const result = getActiveUrlEntry('HTTPS://WIKI.EXAMPLE.COM/PAGE', activeUrls, defaultElements);
+      const result = getActiveUrlEntry(
+        'HTTPS://WIKI.EXAMPLE.COM/PAGE',
+        activeUrls,
+        defaultElements
+      );
       expect(result).not.toBeNull();
       expect(result.elements).toEqual(['code', 'pre']);
     });
