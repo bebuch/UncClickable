@@ -33,6 +33,7 @@ describe('Background Script - loadConfig', () => {
 
     expect(config).toEqual({
       scheme: 'uncopener',
+      htmlElements: 'code',
       activeUrls: [],
       allowedUncs: [],
     });
@@ -41,14 +42,16 @@ describe('Background Script - loadConfig', () => {
   it('should return stored config values', async () => {
     browserMock.storage._setDirect({
       scheme: 'myscheme',
-      activeUrls: ['https://example.com/'],
+      htmlElements: 'code;pre',
+      activeUrls: [{ url: 'https://example.com/', elements: ['code'] }],
       allowedUncs: ['\\\\server\\'],
     });
 
     const config = await loadConfig();
 
     expect(config.scheme).toBe('myscheme');
-    expect(config.activeUrls).toEqual(['https://example.com/']);
+    expect(config.htmlElements).toBe('code;pre');
+    expect(config.activeUrls).toEqual([{ url: 'https://example.com/', elements: ['code'] }]);
     expect(config.allowedUncs).toEqual(['\\\\server\\']);
   });
 
@@ -60,6 +63,7 @@ describe('Background Script - loadConfig', () => {
     const config = await loadConfig();
 
     expect(config.scheme).toBe('custom');
+    expect(config.htmlElements).toBe('code');
     expect(config.activeUrls).toEqual([]);
     expect(config.allowedUncs).toEqual([]);
   });
@@ -72,6 +76,7 @@ describe('Background Script - loadConfig', () => {
 
     expect(config).toEqual({
       scheme: 'uncopener',
+      htmlElements: 'code',
       activeUrls: [],
       allowedUncs: [],
     });
@@ -106,7 +111,8 @@ describe('Background Script - updateIconForTab', () => {
 
   it('should set inactive icon when URL is not allowed', async () => {
     browserMock.storage._setDirect({
-      activeUrls: ['https://allowed.com/'],
+      htmlElements: 'code',
+      activeUrls: [{ url: 'https://allowed.com/', elements: ['code'] }],
     });
 
     await updateIconForTab(1, 'https://other.com/');
@@ -123,7 +129,8 @@ describe('Background Script - updateIconForTab', () => {
 
   it('should set active icon when URL matches configured prefix', async () => {
     browserMock.storage._setDirect({
-      activeUrls: ['https://example.com/docs/'],
+      htmlElements: 'code',
+      activeUrls: [{ url: 'https://example.com/docs/', elements: ['code'] }],
     });
 
     await updateIconForTab(1, 'https://example.com/docs/page.html');

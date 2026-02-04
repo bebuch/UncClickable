@@ -1,6 +1,6 @@
 /**
  * UncClickable Content Script
- * Converts UNC paths in <code> elements to clickable links
+ * Converts UNC paths in configured HTML elements to clickable links
  *
  * Message Passing API:
  * This script listens for messages from the background script:
@@ -17,7 +17,7 @@
 const api = typeof browser !== 'undefined' ? browser : chrome;
 
 // Will be populated by dynamic import
-let isUrlAllowed, isUncAllowed, convertUncToUrl, validateCodeElement;
+let getActiveUrlEntry, isUncAllowed, convertUncToUrl, validateCodeElement;
 
 /**
  * Initialize by dynamically importing the utilities module
@@ -25,7 +25,7 @@ let isUrlAllowed, isUncAllowed, convertUncToUrl, validateCodeElement;
 async function loadModule() {
   const moduleUrl = api.runtime.getURL('src/utils/unc-matcher.js');
   const module = await import(moduleUrl);
-  isUrlAllowed = module.isUrlAllowed;
+  getActiveUrlEntry = module.getActiveUrlEntry;
   isUncAllowed = module.isUncAllowed;
   convertUncToUrl = module.convertUncToUrl;
   validateCodeElement = module.validateCodeElement;
@@ -34,12 +34,14 @@ async function loadModule() {
 // Configuration state
 let config = {
   scheme: 'uncopener',
+  htmlElements: 'code',
   activeUrls: [],
   allowedUncs: [],
 };
 
-// Track if extension is active on current page
+// Track if extension is active on current page and which elements to process
 let isActive = false;
+let activeElements = [];
 
 /**
  * Load configuration from storage
@@ -48,6 +50,7 @@ async function loadConfig() {
   try {
     const result = await api.storage.sync.get({
       scheme: 'uncopener',
+      htmlElements: 'code',
       activeUrls: [],
       allowedUncs: [],
     });
@@ -62,7 +65,16 @@ async function loadConfig() {
  */
 function checkIfActive() {
   const currentUrl = window.location.href;
-  isActive = isUrlAllowed(currentUrl, config.activeUrls);
+  const entry = getActiveUrlEntry(currentUrl, config.activeUrls, config.htmlElements);
+
+  if (entry) {
+    isActive = true;
+    activeElements = entry.elements;
+  } else {
+    isActive = false;
+    activeElements = [];
+  }
+
   return isActive;
 }
 
@@ -101,19 +113,21 @@ function processCodeElement(codeElement) {
 }
 
 /**
- * Process all code elements within a root element
+ * Process all matching elements within a root element
  * @param {Element|Document} root - The root element to search within
  * @returns {number} - Number of elements converted
  */
 function processCodeElements(root = document) {
-  if (!isActive) {
+  if (!isActive || activeElements.length === 0) {
     return 0;
   }
 
-  const codeElements = root.querySelectorAll('code');
+  // Build selector from active elements (e.g., "code, pre, span")
+  const selector = activeElements.join(', ');
+  const elements = root.querySelectorAll(selector);
   let count = 0;
 
-  codeElements.forEach(element => {
+  elements.forEach(element => {
     if (processCodeElement(element)) {
       count++;
     }
@@ -127,7 +141,7 @@ function processCodeElements(root = document) {
  * @param {Node} node - The added node
  */
 function processAddedNode(node) {
-  if (!isActive) {
+  if (!isActive || activeElements.length === 0) {
     return;
   }
 
@@ -136,12 +150,13 @@ function processAddedNode(node) {
     return;
   }
 
-  // If the node itself is a code element, process it
-  if (node.tagName?.toLowerCase() === 'code') {
+  // If the node itself is one of the active elements, process it
+  const tagName = node.tagName?.toLowerCase();
+  if (tagName && activeElements.includes(tagName)) {
     processCodeElement(node);
   }
 
-  // Process any code elements within the added node
+  // Process any matching elements within the added node
   processCodeElements(node);
 }
 
