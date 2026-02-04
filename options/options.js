@@ -309,7 +309,7 @@ async function saveSettings(event) {
     return;
   }
 
-  const { schemeInput, htmlElementsInput, allowedUncsInput } = getElements();
+  const { schemeInput, allowedUncsInput } = getElements();
   const htmlElements = getCurrentHtmlElements();
 
   // Read and clean URL list - filter out empty URLs and stale elements

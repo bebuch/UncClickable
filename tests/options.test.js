@@ -38,9 +38,6 @@ const {
   resetSettings,
   updateSchemePreview,
   validateSettings,
-  addUrlRow,
-  renderUrlList,
-  readUrlListFromDom,
 } = await import('../options/options.js');
 
 // Wait for initial loadSettings to complete
