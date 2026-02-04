@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
-  isUrlAllowed,
+  getActiveUrlEntry,
   isUncAllowed,
   convertUncToUrl,
   validateCodeElement,
@@ -50,14 +50,19 @@ function processCodeElement(element, config) {
 }
 
 /**
- * Process all code elements in a container
+ * Process all matching elements in a container based on config
  */
 function processCodeElements(root, config) {
-  if (!isUrlAllowed(window.location.href, config.activeUrls)) {
+  // Get active URL entry with elements
+  const entry = getActiveUrlEntry(window.location.href, config.activeUrls, config.htmlElements);
+
+  if (!entry || entry.elements.length === 0) {
     return 0;
   }
 
-  const elements = root.querySelectorAll('code');
+  // Build selector from active elements
+  const selector = entry.elements.join(', ');
+  const elements = root.querySelectorAll(selector);
   let count = 0;
 
   elements.forEach(element => {
@@ -72,6 +77,7 @@ function processCodeElements(root, config) {
 describe('Content Script - processCodeElement', () => {
   const defaultConfig = {
     scheme: 'uncopener',
+    htmlElements: 'code',
     activeUrls: [],
     allowedUncs: [],
   };
@@ -147,6 +153,7 @@ describe('Content Script - processCodeElement', () => {
 describe('Content Script - processCodeElements', () => {
   const defaultConfig = {
     scheme: 'uncopener',
+    htmlElements: 'code',
     activeUrls: [],
     allowedUncs: [],
   };
@@ -178,7 +185,7 @@ describe('Content Script - processCodeElements', () => {
   it('should not process when URL is not allowed', () => {
     const config = {
       ...defaultConfig,
-      activeUrls: ['https://allowed.com/'],
+      activeUrls: [{ url: 'https://allowed.com/', elements: ['code'] }],
     };
 
     document.body.innerHTML = '<code>\\\\server\\share</code>';
@@ -192,7 +199,7 @@ describe('Content Script - processCodeElements', () => {
   it('should process when URL is allowed', () => {
     const config = {
       ...defaultConfig,
-      activeUrls: ['https://example.com/'],
+      activeUrls: [{ url: 'https://example.com/', elements: ['code'] }],
     };
 
     document.body.innerHTML = '<code>\\\\server\\share</code>';
@@ -219,11 +226,57 @@ describe('Content Script - processCodeElements', () => {
     // Only the one inside container should be converted
     expect(container.querySelector('a')).not.toBeNull();
   });
+
+  it('should process multiple HTML element types', () => {
+    const config = {
+      ...defaultConfig,
+      htmlElements: 'code;pre;span',
+    };
+
+    document.body.innerHTML = `
+      <code>\\\\server1\\share</code>
+      <pre>\\\\server2\\share</pre>
+      <span>\\\\server3\\share</span>
+      <div>\\\\server4\\share</div>
+    `;
+
+    const count = processCodeElements(document, config);
+
+    expect(count).toBe(3);
+
+    // code, pre, and span should be converted, but not div
+    expect(document.querySelectorAll('a').length).toBe(3);
+    expect(document.querySelector('div').textContent).toBe('\\\\server4\\share');
+  });
+
+  it('should only process elements specified in URL entry', () => {
+    const config = {
+      ...defaultConfig,
+      htmlElements: 'code;pre;span',
+      activeUrls: [{ url: 'https://example.com/', elements: ['pre'] }],
+    };
+
+    document.body.innerHTML = `
+      <code>\\\\server1\\share</code>
+      <pre>\\\\server2\\share</pre>
+      <span>\\\\server3\\share</span>
+    `;
+
+    const count = processCodeElements(document, config);
+
+    expect(count).toBe(1);
+
+    // Only pre should be converted
+    expect(document.querySelector('code').textContent).toBe('\\\\server1\\share');
+    expect(document.querySelector('pre a')).not.toBeNull();
+    expect(document.querySelector('span').textContent).toBe('\\\\server3\\share');
+  });
 });
 
 describe('Content Script - Dynamic Content (MutationObserver simulation)', () => {
   const defaultConfig = {
     scheme: 'uncopener',
+    htmlElements: 'code',
     activeUrls: [],
     allowedUncs: [],
   };
@@ -275,6 +328,7 @@ describe('Content Script - Dynamic Content (MutationObserver simulation)', () =>
 describe('Content Script - Edge Cases', () => {
   const defaultConfig = {
     scheme: 'uncopener',
+    htmlElements: 'code',
     activeUrls: [],
     allowedUncs: [],
   };
@@ -337,6 +391,7 @@ describe('Content Script - Edge Cases', () => {
 describe('Content Script - GitHub README HTML Structure (from test.html)', () => {
   const defaultConfig = {
     scheme: 'uncopener',
+    htmlElements: 'code',
     activeUrls: [],
     allowedUncs: [],
   };
@@ -402,7 +457,7 @@ describe('Content Script - GitHub README HTML Structure (from test.html)', () =>
   it('should work with configured activeUrls for github.com', () => {
     const config = {
       ...defaultConfig,
-      activeUrls: ['https://github.com'],
+      activeUrls: [{ url: 'https://github.com', elements: ['code'] }],
     };
 
     document.body.innerHTML = '<code>\\\\Data-1\\userstmp\\Benjamin_Buch\\X.txt</code>';

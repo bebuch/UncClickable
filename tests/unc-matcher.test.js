@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   isUrlAllowed,
+  getActiveUrlEntry,
   isUncAllowed,
   isValidUncPath,
   convertUncToUrl,
@@ -58,6 +59,81 @@ describe('isUrlAllowed', () => {
 
     it('should include protocol in matching', () => {
       expect(isUrlAllowed('http://wiki.example.com/', allowedUrls)).toBe(false);
+    });
+  });
+});
+
+describe('getActiveUrlEntry', () => {
+  const defaultElements = 'code;pre;span';
+
+  describe('with empty activeUrls list', () => {
+    it('should return all default elements when list is empty', () => {
+      const result = getActiveUrlEntry('https://example.com/', [], defaultElements);
+      expect(result).toEqual({ url: '', elements: ['code', 'pre', 'span'] });
+    });
+
+    it('should return all default elements when list is undefined', () => {
+      const result = getActiveUrlEntry('https://example.com/', undefined, defaultElements);
+      expect(result).toEqual({ url: '', elements: ['code', 'pre', 'span'] });
+    });
+
+    it('should return all default elements when list is null', () => {
+      const result = getActiveUrlEntry('https://example.com/', null, defaultElements);
+      expect(result).toEqual({ url: '', elements: ['code', 'pre', 'span'] });
+    });
+  });
+
+  describe('with configured URLs', () => {
+    const activeUrls = [
+      { url: 'https://wiki.example.com/', elements: ['code', 'pre'] },
+      { url: 'https://intranet.company.com/docs/', elements: ['span'] },
+    ];
+
+    it('should return matching entry with its elements', () => {
+      const result = getActiveUrlEntry(
+        'https://wiki.example.com/page',
+        activeUrls,
+        defaultElements
+      );
+      expect(result).toEqual({ url: 'https://wiki.example.com/', elements: ['code', 'pre'] });
+    });
+
+    it('should return null for non-matching URL', () => {
+      const result = getActiveUrlEntry('https://other.com/', activeUrls, defaultElements);
+      expect(result).toBeNull();
+    });
+
+    it('should be case-insensitive', () => {
+      const result = getActiveUrlEntry(
+        'HTTPS://WIKI.EXAMPLE.COM/PAGE',
+        activeUrls,
+        defaultElements
+      );
+      expect(result).not.toBeNull();
+      expect(result.elements).toEqual(['code', 'pre']);
+    });
+
+    it('should match URL with subpath', () => {
+      const result = getActiveUrlEntry(
+        'https://intranet.company.com/docs/file.pdf',
+        activeUrls,
+        defaultElements
+      );
+      expect(result).toEqual({ url: 'https://intranet.company.com/docs/', elements: ['span'] });
+    });
+  });
+
+  describe('with empty elements in entry', () => {
+    it('should use default elements when entry has empty elements array', () => {
+      const activeUrls = [{ url: 'https://example.com/', elements: [] }];
+      const result = getActiveUrlEntry('https://example.com/page', activeUrls, defaultElements);
+      expect(result.elements).toEqual([]);
+    });
+
+    it('should use default elements when entry has undefined elements', () => {
+      const activeUrls = [{ url: 'https://example.com/' }];
+      const result = getActiveUrlEntry('https://example.com/page', activeUrls, defaultElements);
+      expect(result.elements).toEqual(['code', 'pre', 'span']);
     });
   });
 });

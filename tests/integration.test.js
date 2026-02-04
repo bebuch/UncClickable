@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { browserMock } from './setup.js';
 import {
-  isUrlAllowed,
+  getActiveUrlEntry,
   isUncAllowed,
   convertUncToUrl,
   validateCodeElement,
@@ -17,17 +17,20 @@ import {
  * Helper to simulate the full content script flow
  */
 function simulateContentScriptFlow(config) {
-  // Step 1: Check if URL is allowed
+  // Step 1: Check if URL is allowed and get active elements
   const currentUrl = window.location.href;
-  if (!isUrlAllowed(currentUrl, config.activeUrls)) {
+  const entry = getActiveUrlEntry(currentUrl, config.activeUrls, config.htmlElements || 'code');
+
+  if (!entry || entry.elements.length === 0) {
     return { processed: 0, active: false };
   }
 
-  // Step 2: Find and process code elements
-  const codeElements = document.querySelectorAll('code');
+  // Step 2: Find and process matching elements
+  const selector = entry.elements.join(', ');
+  const elements = document.querySelectorAll(selector);
   let processed = 0;
 
-  codeElements.forEach(element => {
+  elements.forEach(element => {
     const validation = validateCodeElement(element);
     if (!validation.valid) {
       return;
@@ -63,7 +66,8 @@ describe('Integration - Full Content Script Flow', () => {
   it('should process UNC paths when URL is allowed and no UNC restrictions', () => {
     const config = {
       scheme: 'uncopener',
-      activeUrls: ['https://wiki.example.com/'],
+      htmlElements: 'code',
+      activeUrls: [{ url: 'https://wiki.example.com/', elements: ['code'] }],
       allowedUncs: [],
     };
 
@@ -88,7 +92,8 @@ describe('Integration - Full Content Script Flow', () => {
   it('should not process when URL is not in allowed list', () => {
     const config = {
       scheme: 'uncopener',
-      activeUrls: ['https://intranet.company.com/'],
+      htmlElements: 'code',
+      activeUrls: [{ url: 'https://intranet.company.com/', elements: ['code'] }],
       allowedUncs: [],
     };
 
@@ -104,6 +109,7 @@ describe('Integration - Full Content Script Flow', () => {
   it('should filter UNC paths based on allowlist', () => {
     const config = {
       scheme: 'uncopener',
+      htmlElements: 'code',
       activeUrls: [],
       allowedUncs: ['\\\\approved-server\\'],
     };
@@ -125,6 +131,7 @@ describe('Integration - Full Content Script Flow', () => {
   it('should use custom scheme in generated URLs', () => {
     const config = {
       scheme: 'myapp',
+      htmlElements: 'code',
       activeUrls: [],
       allowedUncs: [],
     };
@@ -140,6 +147,7 @@ describe('Integration - Full Content Script Flow', () => {
   it('should skip invalid UNC paths while processing valid ones', () => {
     const config = {
       scheme: 'uncopener',
+      htmlElements: 'code',
       activeUrls: [],
       allowedUncs: [],
     };
@@ -159,6 +167,7 @@ describe('Integration - Full Content Script Flow', () => {
   it('should handle complex page structure', () => {
     const config = {
       scheme: 'uncopener',
+      htmlElements: 'code',
       activeUrls: [],
       allowedUncs: [],
     };
@@ -200,7 +209,7 @@ describe('Integration - Config and URL Matching', () => {
       writable: true,
     });
 
-    const config = { scheme: 'uncopener', activeUrls: [], allowedUncs: [] };
+    const config = { scheme: 'uncopener', htmlElements: 'code', activeUrls: [], allowedUncs: [] };
     const result = simulateContentScriptFlow(config);
 
     expect(result.active).toBe(true);
@@ -215,7 +224,8 @@ describe('Integration - Config and URL Matching', () => {
 
     const config = {
       scheme: 'uncopener',
-      activeUrls: ['https://wiki.example.com/docs/'],
+      htmlElements: 'code',
+      activeUrls: [{ url: 'https://wiki.example.com/docs/', elements: ['code'] }],
       allowedUncs: [],
     };
 
@@ -231,7 +241,8 @@ describe('Integration - Config and URL Matching', () => {
 
     const config = {
       scheme: 'uncopener',
-      activeUrls: ['https://wiki.example.com/docs/'],
+      htmlElements: 'code',
+      activeUrls: [{ url: 'https://wiki.example.com/docs/', elements: ['code'] }],
       allowedUncs: [],
     };
 
@@ -247,7 +258,8 @@ describe('Integration - Config and URL Matching', () => {
 
     const config = {
       scheme: 'uncopener',
-      activeUrls: ['https://wiki.example.com/docs/'],
+      htmlElements: 'code',
+      activeUrls: [{ url: 'https://wiki.example.com/docs/', elements: ['code'] }],
       allowedUncs: [],
     };
 
@@ -270,10 +282,13 @@ describe('Integration - UNC Path Validation and Conversion', () => {
       { input: '\\\\server\\share', expected: 'uncopener://server/share' },
       { input: '\\\\server\\share\\', expected: 'uncopener://server/share/' },
       { input: '\\\\192.168.1.1\\data', expected: 'uncopener://192.168.1.1/data' },
-      { input: '\\\\server-01\\share\\folder\\file.txt', expected: 'uncopener://server-01/share/folder/file.txt' },
+      {
+        input: '\\\\server-01\\share\\folder\\file.txt',
+        expected: 'uncopener://server-01/share/folder/file.txt',
+      },
     ];
 
-    const config = { scheme: 'uncopener', activeUrls: [], allowedUncs: [] };
+    const config = { scheme: 'uncopener', htmlElements: 'code', activeUrls: [], allowedUncs: [] };
 
     testCases.forEach(({ input, expected }) => {
       document.body.innerHTML = `<code>${input}</code>`;
@@ -293,7 +308,7 @@ describe('Integration - UNC Path Validation and Conversion', () => {
       '\\\\', // Too short
     ];
 
-    const config = { scheme: 'uncopener', activeUrls: [], allowedUncs: [] };
+    const config = { scheme: 'uncopener', htmlElements: 'code', activeUrls: [], allowedUncs: [] };
 
     invalidPaths.forEach(path => {
       document.body.innerHTML = `<code>${path}</code>`;
@@ -313,7 +328,8 @@ describe('Integration - Message Passing Simulation', () => {
     // Initial config
     browserMock.storage._setDirect({
       scheme: 'uncopener',
-      activeUrls: ['https://example.com/'],
+      htmlElements: 'code;pre',
+      activeUrls: [{ url: 'https://example.com/', elements: ['code'] }],
       allowedUncs: [],
     });
 
@@ -321,11 +337,13 @@ describe('Integration - Message Passing Simulation', () => {
     // In real scenario, content script would reload config and reprocess
     const newConfig = await browserMock.storage.sync.get({
       scheme: 'uncopener',
+      htmlElements: 'code',
       activeUrls: [],
       allowedUncs: [],
     });
 
-    expect(newConfig.activeUrls).toEqual(['https://example.com/']);
+    expect(newConfig.activeUrls).toEqual([{ url: 'https://example.com/', elements: ['code'] }]);
+    expect(newConfig.htmlElements).toBe('code;pre');
   });
 
   it('should simulate status request/response', () => {
@@ -347,7 +365,7 @@ describe('Integration - Edge Cases', () => {
   });
 
   it('should not process already converted elements', () => {
-    const config = { scheme: 'uncopener', activeUrls: [], allowedUncs: [] };
+    const config = { scheme: 'uncopener', htmlElements: 'code', activeUrls: [], allowedUncs: [] };
 
     document.body.innerHTML = '<code>\\\\server\\share</code>';
 
@@ -361,7 +379,7 @@ describe('Integration - Edge Cases', () => {
   });
 
   it('should handle mixed valid and invalid code elements', () => {
-    const config = { scheme: 'uncopener', activeUrls: [], allowedUncs: [] };
+    const config = { scheme: 'uncopener', htmlElements: 'code', activeUrls: [], allowedUncs: [] };
 
     document.body.innerHTML = `
       <code>\\\\valid\\path</code>
@@ -376,7 +394,7 @@ describe('Integration - Edge Cases', () => {
   });
 
   it('should preserve original UNC path text in link', () => {
-    const config = { scheme: 'uncopener', activeUrls: [], allowedUncs: [] };
+    const config = { scheme: 'uncopener', htmlElements: 'code', activeUrls: [], allowedUncs: [] };
     const originalPath = '\\\\Server-Name\\Share\\Folder\\';
 
     document.body.innerHTML = `<code>${originalPath}</code>`;
@@ -384,5 +402,33 @@ describe('Integration - Edge Cases', () => {
 
     const link = document.querySelector('a');
     expect(link.textContent).toBe(originalPath);
+  });
+
+  it('should process multiple HTML element types per URL', () => {
+    const config = {
+      scheme: 'uncopener',
+      htmlElements: 'code;pre;span',
+      activeUrls: [{ url: 'https://example.com/', elements: ['code', 'pre'] }],
+      allowedUncs: [],
+    };
+
+    Object.defineProperty(window, 'location', {
+      value: { href: 'https://example.com/page' },
+      writable: true,
+    });
+
+    document.body.innerHTML = `
+      <code>\\\\server\\share1</code>
+      <pre>\\\\server\\share2</pre>
+      <span>\\\\server\\share3</span>
+    `;
+
+    const result = simulateContentScriptFlow(config);
+
+    // Only code and pre should be processed, not span
+    expect(result.processed).toBe(2);
+    expect(document.querySelector('code a')).not.toBeNull();
+    expect(document.querySelector('pre a')).not.toBeNull();
+    expect(document.querySelector('span a')).toBeNull();
   });
 });

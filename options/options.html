@@ -34,18 +34,35 @@
         </section>
 
         <section class="setting-group">
-          <label for="active-urls">
-            <span class="label-text">Active URLs</span>
+          <label for="html-elements">
+            <span class="label-text">HTML Elements</span>
             <span class="label-hint"
-              >URL prefixes where the extension should be active (one per line)</span
+              >Semicolon-separated list of HTML elements to search for UNC paths</span
             >
           </label>
-          <textarea
-            id="active-urls"
-            name="activeUrls"
-            rows="5"
-            placeholder="https://wiki.example.com/&#10;https://intranet.company.com/docs/"
-          ></textarea>
+          <input
+            type="text"
+            id="html-elements"
+            name="htmlElements"
+            placeholder="code;pre;span"
+            value="code"
+          />
+          <p class="example">
+            Example: <code>code;pre;span</code> will search in &lt;code&gt;, &lt;pre&gt;, and
+            &lt;span&gt; elements.
+          </p>
+        </section>
+
+        <section class="setting-group">
+          <label>
+            <span class="label-text">Active URLs</span>
+            <span class="label-hint"
+              >URL prefixes where the extension should be active, with element selection per
+              URL</span
+            >
+          </label>
+          <div id="active-urls-list" class="url-list"></div>
+          <button type="button" id="add-url-btn" class="btn-add">+ Add URL</button>
           <p class="example">
             Leave empty to activate on all pages. Include the protocol (https://, http://).
           </p>

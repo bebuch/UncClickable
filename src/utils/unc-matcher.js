@@ -34,6 +34,44 @@ function isUrlAllowed(currentUrl, allowedUrls) {
 }
 
 /**
+ * Get the active URL entry for the current page, including which elements to process
+ * @param {string} currentUrl - The current page URL
+ * @param {{url: string, elements: string[]}[]} activeUrls - Array of active URL entries
+ * @param {string} htmlElements - Semicolon-separated default HTML elements
+ * @returns {{url: string, elements: string[]}|null} - Matching entry with elements, or null if not active
+ */
+function getActiveUrlEntry(currentUrl, activeUrls, htmlElements) {
+  // Parse default elements
+  const defaultElements = htmlElements
+    .split(';')
+    .map(el => el.trim().toLowerCase())
+    .filter(el => el.length > 0);
+
+  // If no URLs configured, use all default elements
+  if (!activeUrls || activeUrls.length === 0) {
+    return { url: '', elements: defaultElements };
+  }
+
+  const currentLower = currentUrl.toLowerCase();
+
+  // Find matching URL entry
+  const matchingEntry = activeUrls.find(entry => {
+    const urlLower = entry.url.toLowerCase();
+    return currentLower.startsWith(urlLower);
+  });
+
+  if (!matchingEntry) {
+    return null;
+  }
+
+  // Return entry with its specific elements
+  return {
+    url: matchingEntry.url,
+    elements: matchingEntry.elements || defaultElements,
+  };
+}
+
+/**
  * Check if a UNC path is allowed based on configured UNC prefixes
  * @param {string} uncPath - The UNC path to check
  * @param {string[]} allowedPrefixes - Array of allowed UNC prefixes
@@ -139,6 +177,7 @@ function validateCodeElement(element) {
 // ES module exports
 export {
   isUrlAllowed,
+  getActiveUrlEntry,
   isUncAllowed,
   isValidUncPath,
   convertUncToUrl,

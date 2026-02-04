@@ -14,7 +14,7 @@
  * - { type: 'configUpdated' } - When storage changes
  */
 
-import { isUrlAllowed } from './utils/unc-matcher.js';
+import { getActiveUrlEntry } from './utils/unc-matcher.js';
 
 // Browser API compatibility
 const api = typeof browser !== 'undefined' ? browser : chrome;
@@ -36,19 +36,20 @@ const ICONS_INACTIVE = {
 
 /**
  * Load configuration from storage
- * @returns {Promise<{scheme: string, activeUrls: string[], allowedUncs: string[]}>}
+ * @returns {Promise<{scheme: string, htmlElements: string, activeUrls: {url: string, elements: string[]}[], allowedUncs: string[]}>}
  */
 async function loadConfig() {
   try {
     const result = await api.storage.sync.get({
       scheme: 'uncopener',
+      htmlElements: 'code',
       activeUrls: [],
       allowedUncs: [],
     });
     return result;
   } catch (error) {
     console.error('UncClickable: Failed to load config', error);
-    return { scheme: 'uncopener', activeUrls: [], allowedUncs: [] };
+    return { scheme: 'uncopener', htmlElements: 'code', activeUrls: [], allowedUncs: [] };
   }
 }
 
@@ -59,7 +60,8 @@ async function loadConfig() {
  */
 async function updateIconForTab(tabId, url) {
   const config = await loadConfig();
-  const active = isUrlAllowed(url, config.activeUrls);
+  const activeEntry = getActiveUrlEntry(url, config.activeUrls, config.htmlElements);
+  const active = activeEntry !== null;
 
   try {
     await api.action.setIcon({
