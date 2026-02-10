@@ -7,8 +7,10 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "uncclickable@example.com",
-      "strict_min_version": "128.0",
-      "data_collection_permissions": false
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "builtin_data_collection": false
+      }
     }
   },
 
@@ -33,7 +35,6 @@
 
   "background": {
     "scripts": ["src/background.js"],
-    "service_worker": "src/background.js",
     "type": "module"
   },
 

@@ -23,8 +23,7 @@ let getActiveUrlEntry, isUncAllowed, convertUncToUrl, validateCodeElement;
  * Initialize by dynamically importing the utilities module
  */
 async function loadModule() {
-  const moduleUrl = api.runtime.getURL('src/utils/unc-matcher.js');
-  const module = await import(moduleUrl);
+  const module = await import('/src/utils/unc-matcher.js');
   getActiveUrlEntry = module.getActiveUrlEntry;
   isUncAllowed = module.isUncAllowed;
   convertUncToUrl = module.convertUncToUrl;
