@@ -3,13 +3,14 @@
   "name": "UncClickable",
   "version": "1.0",
   "description": "Converts UNC paths in code elements to clickable custom URL scheme links",
+  "homepage_url": "https://github.com/bebuch/UncClickable",
 
   "browser_specific_settings": {
     "gecko": {
       "id": "uncclickable@example.com",
-      "strict_min_version": "140.0",
+      "strict_min_version": "142.0",
       "data_collection_permissions": {
-        "builtin_data_collection": false
+        "required": ["none"]
       }
     }
   },
