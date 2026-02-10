@@ -187,22 +187,6 @@ UncClickable/
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-## Privacy Policy
+## Privacy
 
-UncClickable does not collect, transmit, or share any personal data. All configuration is stored locally in your browser. For complete details, see our [Privacy Policy](PRIVACY.md).
-
-### Data Handling Summary
-
-- **What we store**: Only your configuration preferences (URL scheme, active URLs, allowed UNC prefixes)
-- **Where it's stored**: Locally in your browser using `browser.storage.sync`
-- **What we transmit**: Nothing - the extension operates entirely offline
-- **Third-party services**: None
-
-## Store Compliance
-
-This extension complies with:
-- Chrome Web Store Developer Program Policies
-- Microsoft Edge Add-ons Store Developer Policies
-- Mozilla Add-on Policies
-
-All source code is available for review on [GitHub](https://github.com/bebuch/UncClickable).
+UncClickable does not collect, transmit, or share any personal data. All configuration is stored locally in your browser. See [Privacy Policy](PRIVACY.md) for details.
