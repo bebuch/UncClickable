@@ -4,7 +4,7 @@ A browser extension that converts UNC paths (e.g., `\\server\share\folder\`) in 
 
 ## Features
 
-- **Cross-browser support**: Works with Firefox 140+, Chrome, and Edge (Manifest V3)
+- **Cross-browser support**: Works with Firefox 142+, Chrome, and Edge (Manifest V3)
 - **Configurable URL scheme**: Default `uncopener://`, customizable
 - **URL filtering**: Only active on specified URLs (or everywhere if no URLs configured)
 - **UNC prefix filtering**: Only convert specific UNC paths (or all if not configured)
