@@ -114,6 +114,7 @@ This extension only creates the links. You need a separate URL scheme handler to
 The icon PNGs are pre-built and committed to the repository. Regeneration is only needed if you modify `icons/icon.svg`.
 
 **Prerequisites:**
+
 - Inkscape
 - ImageMagick
 
@@ -134,12 +135,29 @@ npm run test:run
 npm run test:coverage
 ```
 
+### Linting and Formatting
+
+```bash
+# Run ESLint on source files
+npm run lint
+
+# Run ESLint with automatic fixes
+npm run lint:fix
+
+# Format code with Prettier
+npm run format
+
+# Check code formatting without making changes
+npm run format:check
+```
+
 ### Project Structure
 
 ```
 UncClickable/
 ├── manifest.json           # Extension manifest (Manifest V3)
 ├── package.json            # Project configuration and dependencies
+├── eslint.config.js        # ESLint configuration
 ├── vitest.config.js        # Test configuration
 ├── src/
 │   ├── background.js       # Service worker / background script
@@ -154,12 +172,13 @@ UncClickable/
 │   └── icon.svg            # Source icon
 ├── scripts/
 │   └── generate-icons.sh   # Icon generation script
-└── tests/                  # Unit tests (Vitest)
+└── tests/                  # Unit and integration tests (Vitest)
     ├── setup.js            # Test setup and browser API mocks
     ├── unc-matcher.test.js # Tests for UNC path utilities
     ├── content.test.js     # Tests for content script logic
     ├── background.test.js  # Tests for background script
     ├── options.test.js     # Tests for options page
+    ├── integration.test.js # Integration tests for component interactions
     └── mocks/
         └── browser-api.js  # Browser extension API mocks
 ```
