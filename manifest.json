@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "UncClickable",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Converts UNC paths in code elements to clickable custom URL scheme links",
   "homepage_url": "https://github.com/bebuch/UncClickable",
 
