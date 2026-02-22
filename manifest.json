@@ -35,7 +35,7 @@
   "permissions": ["storage"],
 
   "background": {
-    "scripts": ["src/background.js"],
+    "service_worker": "src/background.js",
     "type": "module"
   },
 
