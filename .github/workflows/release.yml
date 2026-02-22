@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to release (e.g., v1.0.1)'
+        description: 'Tag to release (e.g., v1.1)'
         required: true
         type: string
 
@@ -36,6 +36,35 @@ jobs:
       - name: Run tests
         run: npm run test:run
 
+      - name: Determine tag
+        id: tag
+        run: |
+          TAG=${{ github.event.inputs.tag || github.ref_name }}
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          # Strip leading 'v' to get version number
+          VERSION=${TAG#v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Validate version consistency
+        run: |
+          TAG_VERSION=${{ steps.tag.outputs.version }}
+          MANIFEST_VERSION=$(jq -r '.version' manifest.json)
+          PACKAGE_VERSION=$(jq -r '.version' package.json)
+          
+          echo "Tag version:      $TAG_VERSION"
+          echo "Manifest version: $MANIFEST_VERSION"
+          echo "Package version:  $PACKAGE_VERSION"
+          
+          if [ "$TAG_VERSION" != "$MANIFEST_VERSION" ]; then
+            echo "::error::Tag version ($TAG_VERSION) does not match manifest.json version ($MANIFEST_VERSION)"
+            exit 1
+          fi
+          if [ "$TAG_VERSION" != "$PACKAGE_VERSION" ]; then
+            echo "::error::Tag version ($TAG_VERSION) does not match package.json version ($PACKAGE_VERSION)"
+            exit 1
+          fi
+          echo "All versions match: $TAG_VERSION"
+
       - name: Build extension package
         run: |
           # Bundle content script (produces dist/content.js)
@@ -55,32 +84,26 @@ jobs:
           
           # Create zip file for distribution
           cd extension-pkg
-          zip -r ../uncclickable-extension.zip .
+          zip -r ../uncclickable-extension-${{ steps.tag.outputs.tag }}.zip .
           cd ..
-
-      - name: Get version from manifest
-        id: version
-        run: |
-          VERSION=$(jq -r '.version' manifest.json)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
-          name: Release ${{ github.event.inputs.tag || github.ref_name }}
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Release ${{ steps.tag.outputs.tag }}
           body: |
-            ## UncClickable ${{ steps.version.outputs.version }}
+            ## UncClickable ${{ steps.tag.outputs.version }}
             
             Browser extension package ready for Firefox and Chrome Web Stores.
             
             ### Installation
-            Download `uncclickable-extension.zip`, extract it, and load it as an unpacked extension.
+            Download `uncclickable-extension-${{ steps.tag.outputs.tag }}.zip`, extract it, and load it as an unpacked extension.
             
             ### What's Changed
             See the commit history for details.
           files: |
-            uncclickable-extension.zip
+            uncclickable-extension-${{ steps.tag.outputs.tag }}.zip
           draft: false
           prerelease: false
         env:
