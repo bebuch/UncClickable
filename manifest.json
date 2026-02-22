@@ -42,15 +42,8 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["src/content.js"],
+      "js": ["dist/content.js"],
       "run_at": "document_end"
-    }
-  ],
-
-  "web_accessible_resources": [
-    {
-      "resources": ["src/utils/unc-matcher.js"],
-      "matches": ["<all_urls>"]
     }
   ],
 
