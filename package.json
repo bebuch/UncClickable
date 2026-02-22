@@ -13,7 +13,8 @@
     "lint:fix": "eslint src tests options --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "generate-icons": "bash scripts/generate-icons.sh"
+    "generate-icons": "bash scripts/generate-icons.sh",
+    "package": "npm run build && mkdir -p web-ext-artifacts && zip -r web-ext-artifacts/uncclickable.zip manifest.json LICENSE PRIVACY.md icons/ options/ src/background.js src/utils/ dist/"
   },
   "keywords": [
     "browser-extension",
