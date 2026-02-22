@@ -14,7 +14,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "generate-icons": "bash scripts/generate-icons.sh",
-    "package": "npm run build && mkdir -p web-ext-artifacts && zip -r web-ext-artifacts/uncclickable.zip manifest.json LICENSE PRIVACY.md icons/ options/ src/background.js src/utils/ dist/"
+    "package": "npm run build && mkdir -p web-ext-artifacts extension-pkg/src/utils && cp -r dist extension-pkg/ && cp src/background.js extension-pkg/src/ && cp src/utils/unc-matcher.js extension-pkg/src/utils/ && cp -r options extension-pkg/ && cp -r icons extension-pkg/ && cp LICENSE PRIVACY.md extension-pkg/ && jq 'del(.background.service_worker)' manifest.json > extension-pkg/manifest.json && cd extension-pkg && zip -r ../web-ext-artifacts/uncclickable-firefox.zip . && cd .. && jq 'del(.background.scripts) | del(.browser_specific_settings)' manifest.json > extension-pkg/manifest.json && cd extension-pkg && zip -r ../web-ext-artifacts/uncclickable-chromium.zip . && cd .. && rm -rf extension-pkg"
   },
   "keywords": [
     "browser-extension",

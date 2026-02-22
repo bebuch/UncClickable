@@ -70,10 +70,8 @@ jobs:
           # Bundle content script (produces dist/content.js)
           npm run build
           
+          # Prepare common files
           mkdir -p extension-pkg/src/utils
-          
-          # Copy only the necessary files for the extension
-          cp manifest.json extension-pkg/
           cp -r dist extension-pkg/
           cp src/background.js extension-pkg/src/
           cp src/utils/unc-matcher.js extension-pkg/src/utils/
@@ -82,9 +80,16 @@ jobs:
           cp LICENSE extension-pkg/
           cp README.md extension-pkg/
           
-          # Create zip file for distribution
+          # Firefox package: use scripts, remove service_worker
+          jq 'del(.background.service_worker)' manifest.json > extension-pkg/manifest.json
           cd extension-pkg
-          zip -r ../uncclickable-extension-${{ steps.tag.outputs.tag }}.zip .
+          zip -r ../uncclickable-firefox-${{ steps.tag.outputs.tag }}.zip .
+          cd ..
+          
+          # Chromium package (Chrome/Edge): use service_worker, remove scripts and browser_specific_settings
+          jq 'del(.background.scripts) | del(.browser_specific_settings)' manifest.json > extension-pkg/manifest.json
+          cd extension-pkg
+          zip -r ../uncclickable-chromium-${{ steps.tag.outputs.tag }}.zip .
           cd ..
 
       - name: Create Release
@@ -95,15 +100,17 @@ jobs:
           body: |
             ## UncClickable ${{ steps.tag.outputs.version }}
             
-            Browser extension package ready for Firefox and Chrome Web Stores.
+            Browser extension packages ready for Firefox and Chrome/Edge Web Stores.
             
-            ### Installation
-            Download `uncclickable-extension-${{ steps.tag.outputs.tag }}.zip`, extract it, and load it as an unpacked extension.
+            ### Downloads
+            - `uncclickable-firefox-${{ steps.tag.outputs.tag }}.zip` — Firefox
+            - `uncclickable-chromium-${{ steps.tag.outputs.tag }}.zip` — Chrome / Edge
             
             ### What's Changed
             See the commit history for details.
           files: |
-            uncclickable-extension-${{ steps.tag.outputs.tag }}.zip
+            uncclickable-firefox-${{ steps.tag.outputs.tag }}.zip
+            uncclickable-chromium-${{ steps.tag.outputs.tag }}.zip
           draft: false
           prerelease: false
         env:
