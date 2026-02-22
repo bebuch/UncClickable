@@ -41,13 +41,12 @@ jobs:
           # Bundle content script (produces dist/content.js)
           npm run build
           
-          mkdir -p extension-pkg
+          mkdir -p extension-pkg/src/utils
           
           # Copy only the necessary files for the extension
           cp manifest.json extension-pkg/
           cp -r dist extension-pkg/
-          cp -r src/background.js extension-pkg/src/background.js
-          mkdir -p extension-pkg/src/utils
+          cp src/background.js extension-pkg/src/
           cp src/utils/unc-matcher.js extension-pkg/src/utils/
           cp -r options extension-pkg/
           cp -r icons extension-pkg/
